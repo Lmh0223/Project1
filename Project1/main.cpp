@@ -25,6 +25,8 @@ Student Name: Lee Man Ho
 const int SCR_WIDTH = 800;
 const int SCR_HEIGHT = 600;
 
+
+
 // struct for storing the obj file
 struct Vertex {
 	glm::vec3 position;
@@ -164,7 +166,138 @@ void sendDataToOpenGL()
 	//TODO
 	//Load objects and bind to VAO and VBO
 	//Load textures
+	loadSpaceship();
+	loadPlanet();
+	loadCraft();
+	loadRock();
 }
+
+GLuint vao[10];
+GLuint vbo[10];
+GLuint ebo[10];
+Model obj[10];
+
+Texture spaceshipTexture0, spaceshipTexture1;
+Texture planetTexture0, planetTexture1;
+Texture rockTexture;
+Texture craftTexture0, craftTexture1;
+
+Shader Objshader;
+
+void loadSpaceship()
+{
+	obj[0] = loadOBJ("CourseProjectMaterials/CourseProjectMaterials/object/spacecraft.obj");
+	spaceshipTexture0.setupTexture("CourseProjectMaterials/CourseProjectMaterials/texture/spacecraftTexture.bmp");
+	spaceshipTexture1.setupTexture("CourseProjectMaterials/CourseProjectMaterials/texture/gold.bmp");
+
+	//setup vao
+	glGenVertexArrays(1, &vao[0]);
+	glBindVertexArray(vao[0]);
+
+	//vbo
+	glGenBuffers(1, &vbo[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+	glBufferData(GL_ARRAY_BUFFER, obj[0].vertices.size() * sizeof(Vertex), &obj[0].vertices[0], GL_STATIC_DRAW);
+
+	//ebo
+	glGenBuffers(1, &ebo[0]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj[0].indices.size() * sizeof(unsigned int), &obj[0].indices[0], GL_STATIC_DRAW);
+
+	//vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+}
+
+void loadPlanet() {
+	// load the planet data from the OBJ file 
+	obj[1] = loadOBJ("CourseProjectMaterials/CourseProjectMaterials/object/planet.obj");
+	planetTexture0.setupTexture("CourseProjectMaterials/CourseProjectMaterials/texture/earthTexture.bmp");
+	planetTexture1.setupTexture("CourseProjectMaterials/CourseProjectMaterials/texture/earthNormal.bmp");
+
+	//setup vao
+	glGenVertexArrays(1, &vao[1]);
+	glBindVertexArray(vao[1]);
+
+	//vbo
+	glGenBuffers(1, &vbo[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+	glBufferData(GL_ARRAY_BUFFER, obj[1].vertices.size() * sizeof(Vertex), &obj[1].vertices[0], GL_STATIC_DRAW);
+
+	//ebo
+	glGenBuffers(1, &ebo[1]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[1]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj[1].indices.size() * sizeof(unsigned int), &obj[1].indices[0], GL_STATIC_DRAW);
+
+	//vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+}
+
+void loadCraft() {
+
+	obj[2] = loadOBJ("CourseProjectMaterials/CourseProjectMaterials/object/craft.obj");
+	craftTexture0.setupTexture("CourseProjectMaterials/CourseProjectMaterials/texture/ringTexture.bmp");
+	craftTexture1.setupTexture("CourseProjectMaterials/CourseProjectMaterials/texture/red.bmp");
+
+	//vao
+	glGenVertexArrays(1, &vao[2]);
+	glBindVertexArray(vao[2]);
+
+	//vbo
+	glGenBuffers(1, &vbo[2]);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+	glBufferData(GL_ARRAY_BUFFER, obj[2].vertices.size() * sizeof(Vertex), &obj[2].vertices[0], GL_STATIC_DRAW);
+
+	//ebo
+	glGenBuffers(1, &ebo[2]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[2]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj[2].indices.size() * sizeof(unsigned int), &obj[2].indices[0], GL_STATIC_DRAW);
+
+	//vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+}
+
+void loadRock() {
+	obj[3] = loadOBJ("CourseProjectMaterials/CourseProjectMaterials/object/rock.obj");
+	rockTexture.setupTexture("CourseProjectMaterials/CourseProjectMaterials/texture/rockTexture.bmp");
+
+	//vao
+	glGenVertexArrays(1, &vao[3]);
+	glBindVertexArray(vao[3]);
+
+	//vbo
+	glGenBuffers(1, &vbo[3]);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
+	glBufferData(GL_ARRAY_BUFFER, obj[3].vertices.size() * sizeof(Vertex), &obj[3].vertices[0], GL_STATIC_DRAW);
+
+	//ebo
+	glGenBuffers(1, &ebo[3]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[3]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj[3].indices.size() * sizeof(unsigned int), &obj[3].indices[0], GL_STATIC_DRAW);
+	
+	//vertex position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+}
+
 
 void initializedGL(void) //run only once
 {
@@ -177,7 +310,7 @@ void initializedGL(void) //run only once
 
 	//TODO: set up the camera parameters	
 	//TODO: set up the vertex shader and fragment shader
-
+	Objshader.setupShader("VertexShaderCode.glsl", "FragmentShaderCode.glsl");
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 }
