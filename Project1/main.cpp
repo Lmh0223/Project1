@@ -8,6 +8,10 @@ Student Name: Lee Man Ho
 #include "Dependencies/GLFW/glfw3.h"
 #include "Dependencies/glm/glm.hpp"
 #include "Dependencies/glm/gtc/matrix_transform.hpp"
+//#include "Dependencies/freeglut/freeglut.h"
+
+#include "Dependencies/stb_image/stb_image.h"
+#define STB_IMAGE_IMPLEMENTATION
 
 #include "Shader.h"
 #include "Texture.h"
