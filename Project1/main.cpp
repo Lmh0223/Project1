@@ -30,15 +30,16 @@ int astroidnum;
 int textureNum[3];
 
 glm::mat4 spaceshippos = glm::mat4(1.0f);
+float theta = 20.0f;
 
 //camera
 glm::mat4 spaceshipLocal = glm::mat4(1.0f);
 glm::mat4 spaceship_Rot_M = glm::mat4(1.0f);
-float SCInitialPos[3] = { 50.0f, 0.0f, 50.0f };
-float SCTranslation[3] = { 1.0f, 0.0f, 1.0f };
-glm::vec4 cameraTarget, SC_world_Front_Direction, SC_world_Right_Direction;
-glm::vec3 SC_local_front = glm::vec3(0.0f, 0.0f, 1.0f);
-glm::vec3 SC_local_right = glm::vec3(-1.0f, 0.0f, 0.0f);
+float SSInitPos[3] = { 50.0f, 0.0f, 50.0f };
+float SSTrans[3] = { 1.0f, 0.0f, 1.0f };
+glm::vec4 cameraTarget, SS_world_FB_Dir, SS_world_RL_Dir;
+glm::vec3 SS_local_fb = glm::vec3(0.0f, 0.0f, 1.0f);
+glm::vec3 SS_local_rl = glm::vec3(-1.0f, 0.0f, 0.0f);
 float zoom = 45.0f;
 glm::vec4 cameraLocation;
 glm::vec3 cameraFront = glm::vec3(0, 400, -1700);
@@ -49,6 +50,8 @@ struct Vertex {
 	glm::vec2 uv;
 	glm::vec3 normal;
 };
+
+
 
 struct Model {
 	std::vector<Vertex> vertices;
@@ -166,6 +169,7 @@ Model loadOBJ(const char* objPath)
 	return model;
 }
 
+
 void get_OpenGL_info()
 {
 	// OpenGL information
@@ -178,11 +182,12 @@ void get_OpenGL_info()
 }
 
 
-
 GLuint vao[10];
 GLuint vbo[10];
 GLuint ebo[10];
 Model obj[10];
+
+//OBJECT spaceship, planet, craft, rock;
 
 Texture spaceshipTexture0, spaceshipTexture1;
 Texture planetTexture0, planetTexture1;
@@ -334,6 +339,30 @@ void initializedGL(void) //run only once
 
 //light
 
+//camera and spaceship move together
+void sscamera() 
+{
+	float scale = 0.005;
+
+	glm::mat4 spaceship_scale_M = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+
+	glm::mat4 spaceship_trans_M = glm::translate(glm::mat4(1.0f),
+		glm::vec3(SSInitPos[0] + SSTrans[0], SSInitPos[1] + SSTrans[1], SSInitPos[2] + SSTrans[2]));
+
+	spaceship_Rot_M = glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	spaceshipLocal = spaceship_trans_M * spaceship_Rot_M * spaceship_scale_M;
+	cameraTarget = spaceshipLocal * glm::vec4(SS_local_fb, 1.0f);
+
+	SS_world_FB_Dir = spaceshipLocal * glm::vec4(SS_local_fb, 1.0f);
+	SS_world_FB_Dir = normalize(SS_world_FB_Dir);
+
+	SS_world_RL_Dir = spaceshipLocal * glm::vec4(SS_local_fb, 1.0f);
+	SS_world_RL_Dir = normalize(SS_world_RL_Dir);
+
+	cameraLocation = spaceshipLocal * glm::vec4(cameraFront, 1.0f);
+}
+
 //object position
 glm::vec3 earth_location = glm::vec3(300.0f / 3.0, 0.0f, 300.0f / 3.0);
 glm::vec3 craft_location_1 = glm::vec3(100.0f / 0.5, 0.0f, 100.0f / 0.5);
@@ -435,11 +464,13 @@ void draw(int objID)
 
 //random asteroids
 void Asteroids(int asteroidnum) {
-	glm::mat4* modelMatrices;
-	modelMatrices = new glm::mat4[asteroidnum];
-	srand(glfwGetTime() * 0.000001); // initialize random seed
+	glm::mat4* modelMatrix;
+	modelMatrix = new glm::mat4[asteroidnum];
+	srand(glfwGetTime() * 0.000001); // initialize random
 	float radius = 16.5;
 	float offset = 4.5f;
+	float angle, displacement, x, y, z, scale, rotationAngle;
+	int i;
 
 	for (GLuint i = 0; i < asteroidnum; i++)
 	{
@@ -450,29 +481,31 @@ void Asteroids(int asteroidnum) {
 		model = glm::rotate(model, glm::radians((float)glfwGetTime() * 10), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
-		float angle = (float)i / (float)asteroidnum * 360.0f;
-		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float x = sin(angle) * radius + displacement;
+		angle = (float)i / (float)asteroidnum * 360.0f;
 		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
+		x = sin(angle) * radius + displacement;
 		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float z = cos(angle) * radius + displacement;
+		y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		z = cos(angle) * radius + displacement;
 		model = glm::translate(model, glm::vec3(x, y, z));
 
 		// 2. scale: scale between 0.01 and 0.04f
-		float scale = (rand() % 100) / 1000.0f + 0.1;
+		scale = (rand() % 100) / 1000.0f + 0.1;
 		model = glm::scale(model, glm::vec3(scale));
 
 		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
-		float rotAngle = (rand() % 360);
-		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+		rotationAngle = (rand() % 360);
+		model = glm::rotate(model, rotationAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
 		// 4. now add to list of matrices
-		modelMatrices[i] = model;
+		modelMatrix[i] = model;
 	}
 
-	for (unsigned int i = 0; i < asteroidnum; i++) {
+	for (i = 0; i < asteroidnum; i++) 
+	{
 		GLint modelTransformMatrixUniformLocation = glGetUniformLocation(programID, "modelTransformMatrix");
-		glUniformMatrix4fv(modelTransformMatrixUniformLocation, 1, GL_FALSE, &modelMatrices[i][0][0]);
+		glUniformMatrix4fv(modelTransformMatrixUniformLocation, 1, GL_FALSE, &modelMatrix[i][0][0]);
 		glDrawElements(GL_TRIANGLES, obj[4].indices.size(), GL_UNSIGNED_INT, 0);
 	}
 }
@@ -486,7 +519,27 @@ void paintGL(void)  //always run
 	//Set lighting information, such as position and color of lighting source
 	//Set transformation matrix
 	//Bind different textures
+	sscamera();
 
+	//spaceship
+	glBindVertexArray(vao[0]);
+	draw(1);
+	glDrawElements(GL_TRIANGLES, obj[0].indices.size(), GL_UNSIGNED_INT, 0);
+
+	//earth
+	glBindVertexArray(vao[1]);
+	draw(2);
+	glDrawElements(GL_TRIANGLES, obj[1].indices.size(), GL_UNSIGNED_INT, 0);
+
+	//craft
+	glBindVertexArray(vao[2]);
+	draw(3);
+	glDrawElements(GL_TRIANGLES, obj[1].indices.size(), GL_UNSIGNED_INT, 0);
+
+	//asteroids
+	glBindVertexArray(vao[3]);
+	draw(4);
+	Asteroids(astroidnum);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
