@@ -51,8 +51,6 @@ struct Vertex {
 	glm::vec3 normal;
 };
 
-
-
 struct Model {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -542,6 +540,17 @@ void paintGL(void)  //always run
 	Asteroids(astroidnum);
 }
 
+struct MouseController 
+{
+	bool LEFT_BUTTON = false;
+	bool RIGHT_BUTTON = false;
+	double MOUSE_Clickx = 0.0, MOUSE_Clicky = 0.0;
+	double MOUSE_X = 0.0, MOUSE_Y = 0.0;
+	int click_time = glfwGetTime();
+};
+
+MouseController controlMouse;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -550,6 +559,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	// Sets the mouse-button callback for the current window.	
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		controlMouse.LEFT_BUTTON = true;
+	}
 }
 
 void cursor_position_callback(GLFWwindow* window, double x, double y)
@@ -560,11 +573,42 @@ void cursor_position_callback(GLFWwindow* window, double x, double y)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	// Sets the scoll callback for the current window.
+	zoom -= (float)yoffset;
+
+	if (zoom < 1.0f)
+		zoom = 1.0f;
+
+	if (zoom > 45.0f)
+		zoom = 45.0f;
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	// Sets the Keyboard callback for the current window.
+	if (key == GLFW_KEY_DOWN) 
+	{
+		SSTrans[2] += cos(glm::radians(theta)) * -SS_world_FB_Dir[2];
+		SSTrans[0] += sin(glm::radians(theta)) * -SS_world_FB_Dir[2];
+	}
+
+	if (key == GLFW_KEY_UP) 
+	{
+		SSTrans[2] += cos(glm::radians(theta)) * SS_world_FB_Dir[2];
+		SSTrans[0] += sin(glm::radians(theta)) * SS_world_FB_Dir[2];
+	}
+
+	if (key == GLFW_KEY_LEFT) 
+	{
+		SSTrans[2] += cos(glm::radians(theta) + 90) * SS_world_RL_Dir[0];
+		SSTrans[0] += sin(glm::radians(theta) + 90) * SS_world_RL_Dir[0];
+	}
+
+	if (key == GLFW_KEY_RIGHT) 
+	{
+		SSTrans[2] += cos(glm::radians(theta) + 90) * -SS_world_RL_Dir[0];
+		SSTrans[0] += sin(glm::radians(theta) + 90) * -SS_world_RL_Dir[0];
+	}
+
 }
 
 
