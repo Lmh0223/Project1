@@ -362,10 +362,9 @@ void sscamera()
 }
 
 //object position
-glm::vec3 earth_location = glm::vec3(300.0f / 3.0, 0.0f, 300.0f / 3.0);
-glm::vec3 craft_location_1 = glm::vec3(100.0f / 0.5, 0.0f, 100.0f / 0.5);
-glm::vec3 craft_location_2 = glm::vec3(150.0f / 0.5, 0.0f, 150.0f / 0.5);
-glm::vec3 craft_location_3 = glm::vec3(200.0f / 0.5, 0.0f, 200.0f / 0.5);
+glm::vec3 planet_location = glm::vec3(100.0f, 0.0f, 100.0f);
+
+glm::vec3 craft_location_1 = glm::vec3(100.0f, 0.0f, 100.0f);
 
 //draw objects to send to paintGL
 void draw(int objID)
@@ -438,7 +437,10 @@ void draw(int objID)
 
 		glUniform1i(TextureID, textplus);
 
-		modelTransformMatrix = spaceshippos;
+		modelTransformMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0, 1.0, 1.0));;
+		modelTransformMatrix *= glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f));;
+		modelTransformMatrix *= glm::rotate(glm::mat4(1.0f), glm::radians((float)glfwGetTime() * 100), glm::vec3(0, 1, 0));;
+		modelTransformMatrix *= glm::translate(glm::mat4(1.0f), glm::vec3(5.0f, 0.0f, 0.0f));;
 
 		modelTransformMatrixUniformLocation = glGetUniformLocation(programID, "modelTransformMatrix");
 		glUniformMatrix4fv(modelTransformMatrixUniformLocation, 1, GL_FALSE, &modelTransformMatrix[0][0]);
@@ -465,8 +467,8 @@ void Asteroids(int asteroidnum) {
 	glm::mat4* modelMatrix;
 	modelMatrix = new glm::mat4[asteroidnum];
 	srand(glfwGetTime() * 0.000001); // initialize random
-	float radius = 16.5;
-	float offset = 4.5f;
+	float radius = 15;
+	float offset = 5.0f;
 	float angle, displacement, x, y, z, scale, rotationAngle;
 	int i;
 
@@ -474,29 +476,29 @@ void Asteroids(int asteroidnum) {
 	{
 		glm::mat4 model = glm::mat4(1.0f);
 
-		// rotate at earth centre
-		model = glm::translate(model, glm::vec3(earth_location.x * 3, earth_location.y, earth_location.z * 3));
+		// rotate at planet centre
+		model = glm::translate(model, glm::vec3(planet_location.x * 6, planet_location.y, planet_location.z * 6));
 		model = glm::rotate(model, glm::radians((float)glfwGetTime() * 10), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
+		//translation: displace along circle with 'radius'
 		angle = (float)i / (float)asteroidnum * 360.0f;
+
 		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 		x = sin(angle) * radius + displacement;
+
 		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
+		y = displacement * 0.5f;
+
 		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 		z = cos(angle) * radius + displacement;
+
 		model = glm::translate(model, glm::vec3(x, y, z));
 
-		// 2. scale: scale between 0.01 and 0.04f
-		scale = (rand() % 100) / 1000.0f + 0.1;
-		model = glm::scale(model, glm::vec3(scale));
-
-		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+		//rotation: add random rotation
 		rotationAngle = (rand() % 360);
-		model = glm::rotate(model, rotationAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+		model = glm::rotate(model, rotationAngle, glm::vec3(0.5f, 0.5f, 1.0f));
 
-		// 4. now add to list of matrices
+		//add to model matrix
 		modelMatrix[i] = model;
 	}
 
