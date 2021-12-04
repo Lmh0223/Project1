@@ -315,7 +315,7 @@ void sendDataToOpenGL()
 	//Load textures
 	loadSpaceship();
 	loadPlanet();
-	loadCraft();
+	//loadCraft();
 	loadRock();
 }
 
@@ -511,7 +511,7 @@ void Asteroids(int asteroidnum) {
 
 void paintGL(void)  //always run
 {
-	glClearColor(1.0f, 2.0f, 1.0f, 0.5f); //specify the background color, this is just an example
+	glClearColor(0.0f, 3.0f, 1.0f, 0.5f); //specify the background color, this is just an example
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//TODO:
 	//Set lighting information, such as position and color of lighting source
@@ -622,7 +622,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	/* glfw: configure; necessary for MAC */
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
