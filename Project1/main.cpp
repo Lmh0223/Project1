@@ -484,12 +484,9 @@ void Asteroids(int asteroidnum) {
 		angle = (float)i / (float)asteroidnum * 360.0f;
 
 		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+
 		x = sin(angle) * radius + displacement;
-
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 		y = displacement * 0.5f;
-
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 		z = cos(angle) * radius + displacement;
 
 		model = glm::translate(model, glm::vec3(x, y, z));
