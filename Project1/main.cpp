@@ -34,7 +34,7 @@ float theta = 20.0f;
 
 //camera
 glm::mat4 spaceshipLocal = glm::mat4(1.0f);
-glm::mat4 spaceship_Rot_M = glm::mat4(1.0f);
+glm::mat4 spaceship_Rotation = glm::mat4(1.0f);
 float SSInitPos[3] = { 50.0f, 0.0f, 50.0f };
 float SSTrans[3] = { 1.0f, 0.0f, 1.0f };
 glm::vec4 cameraTarget, SS_world_FB_Dir, SS_world_RL_Dir;
@@ -342,14 +342,14 @@ void sscamera()
 {
 	float scale = 0.005;
 
-	glm::mat4 spaceship_scale_M = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+	glm::mat4 spaceship_scale = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
 
 	glm::mat4 spaceship_trans_M = glm::translate(glm::mat4(1.0f),
 		glm::vec3(SSInitPos[0] + SSTrans[0], SSInitPos[1] + SSTrans[1], SSInitPos[2] + SSTrans[2]));
 
-	spaceship_Rot_M = glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(0.0f, 1.0f, 0.0f));
+	spaceship_Rotation = glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	spaceshipLocal = spaceship_trans_M * spaceship_Rot_M * spaceship_scale_M;
+	spaceshipLocal = spaceship_trans_M * spaceship_Rotation * spaceship_scale;
 	cameraTarget = spaceshipLocal * glm::vec4(SS_local_fb, 1.0f);
 
 	SS_world_FB_Dir = spaceshipLocal * glm::vec4(SS_local_fb, 1.0f);
@@ -480,7 +480,7 @@ void Asteroids(int asteroidnum) {
 		model = glm::translate(model, glm::vec3(planet_location.x * 6, planet_location.y, planet_location.z * 6));
 		model = glm::rotate(model, glm::radians((float)glfwGetTime() * 10), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		//translation: displace along circle with 'radius'
+		//translation
 		angle = (float)i / (float)asteroidnum * 360.0f;
 
 		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
@@ -552,10 +552,35 @@ struct MouseController
 };
 
 MouseController controlMouse;
+bool Mousef;
+double finalX;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (Mousef)
+	{
+		finalX = xpos;
+		Mousef = false;
+	}
+
+	if (finalX > xpos)
+	{
+		theta += 5.0f;
+		spaceship_Rotation = glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+
+	if (finalX < xpos)
+	{
+		theta -= 5.0f;
+		spaceship_Rotation = glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+
+	finalX = xpos;
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -570,11 +595,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
 	// Sets the cursor position callback for the current window
+	if (controlMouse.LEFT_BUTTON)
+	{
+		mouse_callback(window, x, y);
+	}
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	// Sets the scoll callback for the current window.
 	zoom -= (float)yoffset;
 
 	if (zoom < 1.0f)
@@ -645,7 +673,7 @@ int main(int argc, char* argv[])
 
 	/*register callback functions*/
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetKeyCallback(window, key_callback);                                                                  //    
+	glfwSetKeyCallback(window, key_callback);                                                                   
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
