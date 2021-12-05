@@ -5,9 +5,13 @@ Student ID: Lee Man Ho & Wang Yu
 
 Manipulation:
 	// For example:
-        // Key "Esc": exit
-        // Key "r": rotate cube model
 
         // Mouse
         // ....................
+	//spaceship movement
+	// Key "Down": move the spaceship (down)
+        // Key "Up": move the spaceship (up)
+	// Key "Left": move the spaceship (left)
+        // Key "Right": move the spaceship (right)
+	
 
