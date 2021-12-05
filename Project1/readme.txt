@@ -1,7 +1,6 @@
-CSCI3260 Assignment 2 Texture Mapping/ Lighting Control  
-
+CSCI3260 Course Project 
 Name: 
-Student ID:
+Student ID: 
 
 Manipulation:
 	// For example:
