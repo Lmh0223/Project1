@@ -1,7 +1,7 @@
 /*
 Student Information
-Student ID: 1155110941
-Student Name: Lee Man Ho
+Student ID: 1155110941 & 1155124382
+Student Name: Lee Man Ho & Wang Yu
 */
 
 #include "Dependencies/glew/glew.h"
