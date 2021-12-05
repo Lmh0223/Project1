@@ -1,6 +1,7 @@
 CSCI3260 Course Project 
-Name: 
-Student ID: 
+
+Name: 1155110941 & 1155124382
+Student ID: Lee Man Ho & Wang Yu
 
 Manipulation:
 	// For example:
